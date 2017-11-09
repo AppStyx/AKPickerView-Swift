@@ -59,7 +59,7 @@ private class AKCollectionViewCell: UICollectionViewCell {
 	var imageView: UIImageView!
 	var font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
 	var highlightedFont = UIFont.systemFont(ofSize: UIFont.systemFontSize)
-	var _selected: Bool = false {
+    override var isSelected: Bool {
 		didSet(selected) {
 			let animation = CATransition()
 			animation.type = kCATransitionFade
@@ -266,7 +266,7 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		}
 	}
 	/// Readwrite. A boolean value indicates whether the mask is disabled.
-	@IBInspectable public var maskDisabled: Bool! = nil {
+	@IBInspectable public var maskDisabled: Bool = false {
 		didSet {
 			self.collectionView.layer.mask = self.maskDisabled == true ? nil : {
 				let maskLayer = CAGradientLayer()
@@ -373,8 +373,8 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 	:returns: A CGSize which contains given string just.
 	*/
 	fileprivate func sizeForString(_ string: NSString) -> CGSize {
-		let size = string.size(attributes: [NSFontAttributeName: self.font])
-		let highlightedSize = string.size(attributes: [NSFontAttributeName: self.highlightedFont])
+        let size = string.size(withAttributes: [.font: self.font])
+        let highlightedSize = string.size(withAttributes: [.font: self.highlightedFont])
 		return CGSize(
 			width: ceil(max(size.width, highlightedSize.width)),
 			height: ceil(max(size.height, highlightedSize.height)))
@@ -420,7 +420,7 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		self.invalidateIntrinsicContentSize()
 		self.collectionView.collectionViewLayout.invalidateLayout()
 		self.collectionView.reloadData()
-		if self.dataSource != nil && self.dataSource!.numberOfItemsInPickerView(self) > 0 {
+        if self.dataSource != nil && self.dataSource!.numberOfItemsInPickerView(self) > 0 && self.selectedItem < self.dataSource!.numberOfItemsInPickerView(self) {
 			self.selectItem(self.selectedItem, animated: false, notifySelection: false)
 		}
 	}
@@ -534,7 +534,7 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		} else if let image = self.dataSource?.pickerView?(self, imageForItem: indexPath.item) {
 			cell.imageView.image = image
 		}
-		cell._selected = (indexPath.item == self.selectedItem)
+		cell.isSelected = (indexPath.item == self.selectedItem)
 		return cell
 	}
 
